@@ -1,0 +1,40 @@
+{
+  "name": "just-signals",
+  "version": "1.0.0",
+  "description": "An implementation of signals based on EventTarget",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tony-sull/just-signals.git",
+    "directory": "packages/just-signals"
+  },
+  "bugs": "https://github.com/tony-sull/just-signals/issues",
+  "homepage": "https://github.com/tony-sull/just-signals",
+  "type": "module",
+  "author": "tony-sull",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "signals",
+    "observable",
+    "reactive"
+  ],
+  "scripts": {
+    "test": "vitest",
+    "dev": "npm run clean && tsc --watch",
+    "build": "npm run clean && tsc",
+    "clean": "rimraf dist",
+    "lint": "eslint . --fix",
+    "prepack": "npm run clean && npm run build"
+  },
+  "devDependencies": {
+    "eslint-config": "^1.0.0",
+    "prettier-config": "^1.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.2",
+    "vitest": "^3.2.2"
+  }
+}
