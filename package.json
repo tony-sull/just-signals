@@ -1,0 +1,31 @@
+{
+  "name": "root",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "prepare": "husky",
+    "dev": "turbo dev --parallel --continue",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "release": "turbo run build lint && changeset version && changeset publish"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "husky": "^9.1.7",
+    "turbo": "^2.5.4"
+  },
+  "packageManager": "npm@10.7.0",
+  "dependencies": {
+    "@changesets/cli": "^2.29.4"
+  }
+}
