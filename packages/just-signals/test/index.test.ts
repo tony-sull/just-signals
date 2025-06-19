@@ -18,9 +18,12 @@ suite("computed", () => {
   test("is lazily evaluated and reactive", () => {
     const a = signal(1);
     const b = signal(2);
-    const c = computed(() => {
-      return a.value + b.value;
-    }, [a, b]);
+    const c = computed(
+      (a, b) => {
+        return a + b;
+      },
+      [a, b],
+    );
 
     expect(c.value, "computed value is null without subscribers").toBeNull();
 
