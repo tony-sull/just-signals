@@ -1,6 +1,9 @@
 import { expect, suite, test } from "vitest";
 import { computed, effect, signal } from "../src/index";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
+
 suite("signal", () => {
   test("stores the latest value", () => {
     const a = signal(1);
@@ -12,18 +15,27 @@ suite("signal", () => {
 });
 
 suite("computed", () => {
-  test("is reactive", () => {
+  test("is lazily evaluated and reactive", () => {
     const a = signal(1);
     const b = signal(2);
     const c = computed(() => {
       return a.value + b.value;
     }, [a, b]);
 
+    expect(c.value, "computed value is null without subscribers").toBeNull();
+
+    c.addEventListener("change", noop);
+
     expect(c.value).toEqual(3);
-
     a.value = 2;
-
     expect(c.value).toEqual(4);
+
+    c.removeEventListener("change", noop);
+
+    a.value = 3;
+    expect(c.value, "computed value is unchanged without subscribers").toEqual(
+      4,
+    );
   });
 });
 
