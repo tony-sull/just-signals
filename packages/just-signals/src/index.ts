@@ -1,23 +1,9 @@
 export type Effect = () => void;
 export type Dispose = () => void;
 
-let activeObserver: {
-  effect: Effect;
-  link?: (unsubscribe: (effect: Effect) => void) => void;
-} | null = null;
-
 export class Signal<T = unknown> extends EventTarget {
-  #unsubscribe(cb: Effect) {
-    this.removeEventListener("change", cb);
-  }
-
   #value: T;
   get value() {
-    if (activeObserver) {
-      this.addEventListener("change", activeObserver.effect);
-      activeObserver.link?.(this.#unsubscribe.bind(this));
-    }
-
     return this.#value;
   }
   set value(value: T) {
@@ -40,34 +26,28 @@ export class Signal<T = unknown> extends EventTarget {
 }
 
 export class Computed<T = unknown> extends Signal<T> {
-  constructor(fn: () => T) {
-    activeObserver = {
-      effect: () => {
-        this.value = fn();
-      },
-    };
+  constructor(fn: () => T, deps: Signal[]) {
     super(fn());
-    activeObserver = null;
+
+    for (const dep of deps) {
+      dep.addEventListener("change", () => (this.value = fn()));
+    }
   }
 }
 
 export const signal = <T = unknown>(value: T) => new Signal(value);
-export const computed = <T = unknown>(fn: () => T) => new Computed(fn);
-export const effect = (cb: Effect): Dispose => {
-  const unsubscribers: ((_cb: Effect) => void)[] = [];
-
-  activeObserver = {
-    effect: cb,
-    link: (unsubscribe: (_cb: Effect) => void) => {
-      unsubscribers.push(unsubscribe);
-    },
-  };
+export const computed = <T = unknown>(fn: () => T, deps: Signal[]) =>
+  new Computed(fn, deps);
+export const effect = (cb: Effect, deps: Signal[]): Dispose => {
   cb();
-  activeObserver = null;
+
+  for (const dep of deps) {
+    dep.addEventListener("change", cb);
+  }
 
   return () => {
-    for (const unsubscribe of unsubscribers) {
-      unsubscribe(cb);
+    for (const dep of deps) {
+      dep.removeEventListener("change", cb);
     }
   };
 };

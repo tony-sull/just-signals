@@ -15,7 +15,9 @@ suite("computed", () => {
   test("is reactive", () => {
     const a = signal(1);
     const b = signal(2);
-    const c = computed(() => a.value + b.value);
+    const c = computed(() => {
+      return a.value + b.value;
+    }, [a, b]);
 
     expect(c.value).toEqual(3);
 
@@ -33,7 +35,7 @@ suite("effect", () => {
     const cb = () => {
       lastValue = a.value;
     };
-    effect(cb);
+    effect(cb, [a]);
 
     expect(lastValue).toEqual(1);
 
@@ -49,7 +51,7 @@ suite("effect", () => {
     const cb = () => {
       lastValue = a.value;
     };
-    const dispose = effect(cb);
+    const dispose = effect(cb, [a]);
 
     expect(lastValue).toEqual(1);
 
